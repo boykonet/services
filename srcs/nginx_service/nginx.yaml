@@ -8,13 +8,18 @@ spec:
   type: LoadBalancer
   ports:
     - protocol: TCP
+      name: http
       port: 80
       targetPort: 80
+    - protocol: TCP
+      name: https
+      port: 443
+      targetPort: 443
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: nginx-deploy
   labels:
     app: nginx
 spec:
@@ -29,7 +34,8 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx_image
+        image: nginx-image
         imagePullPolicy: Never
         ports:
         - containerPort: 80
+        - containerPort: 443
