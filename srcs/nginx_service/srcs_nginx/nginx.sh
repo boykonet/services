@@ -4,6 +4,6 @@ ssh-keygen -A
 
 /usr/bin/supervisord -c /etc/supervisord.conf
 
-/bin/sh -c "/files/create_user.sh"
+echo "gkarina42\ngkarina42" | adduser gkarina
 
 tail -f /dev/null

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-svc
+spec:
+  selector:
+    app: php
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-deploy
+  labels:
+    app: php
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php
+  template:
+    metadata:
+      labels:
+        app: php
+    spec:
+      containers:
+      - name: php
+        image: php-image
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        - containerPort: 3306
