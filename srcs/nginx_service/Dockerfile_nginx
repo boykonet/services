@@ -13,9 +13,17 @@ COPY ./srcs_nginx/nginx.sh /files/
 COPY ./srcs_nginx/supervisord.conf /etc/supervisord.conf
 COPY ./srcs_nginx/sshd_config /etc/ssh/sshd_config
 COPY ./srcs_nginx/create_user.sh /files/
-RUN chmod +u /files/nginx.sh && chmod +u /etc/nginx/conf.d/default.conf && \
-		chmod +u /etc/supervisord.conf && chmod +u /etc/ssh/sshd_config && \
-			chmod +u /files/create_user.sh
+RUN chmod 744 /files/nginx.sh && chmod 744 /etc/nginx/conf.d/default.conf && \
+	chmod 744 /etc/supervisord.conf && chmod 744 /etc/ssh/sshd_config && \
+	chmod 744 /files/create_user.sh
+
+# create .ssh/ dir and copy key.pub in /.ssh/autorized_keys
+RUN mkdir -p /root/.ssh/
+RUN chmod 0700 /root/.ssh/
+RUN touch /root/.ssh/authorized_keys
+COPY ./srcs_nginx/gkarina_id_rsa.pub /gkarina_id_rsa.pub
+RUN cat /gkarina_id_rsa.pub >> /root/.ssh/authorized_keys
+RUN chmod 600 /root/.ssh/authorized_keys && rm -rf /gkarina_id_rsa.pub
 
 EXPOSE 80 443 22
 CMD /bin/sh /files/nginx.sh

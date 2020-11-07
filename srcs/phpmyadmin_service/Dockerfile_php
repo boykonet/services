@@ -11,6 +11,6 @@ COPY ./srcs_phpmyadmin/config.inc.php /var/www/phpmyadmin/config.inc.php
 RUN chmod +u /var/www/phpmyadmin/config.inc.php
 #RUN chown -R www-data:www-data /var/www/phpmyadmin/
 
-EXPOSE 5050 3306
+EXPOSE 5050
 
 CMD /bin/sh tail -f /dev/null
