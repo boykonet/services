@@ -1,0 +1,21 @@
+FROM alpine:latest
+
+RUN apk update && apk upgrade
+RUN apk add vsftpd
+#RUN rc-update add vsftpd default
+#RUN rc-service vsftpd restart
+
+COPY ./srcs_ftps/vsftpd.conf /etc/vsftpd/vsftpd.conf
+RUN chmod 744 /etc/vsftpd/vsftpd.conf
+
+# copy script
+RUN mkdir -p /files/
+COPY ./srcs_ftps/ftps_script.sh /files/ftps_script.sh
+RUN chmod 744 /files/ftps_script.sh
+
+# /etc/vsftpd/vsftpd.conf - configurate file
+# /var/lib/ftp - all files
+
+EXPOSE 21
+
+CMD /bin/sh -c "/files/ftps_script.sh"
