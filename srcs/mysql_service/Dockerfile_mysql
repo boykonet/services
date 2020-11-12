@@ -3,6 +3,11 @@ FROM alpine:latest
 RUN apk update && apk upgrade
 RUN apk add mariadb-server mariadb-client
 
+# copy scrpt
+RUN mkdir /files
+COPY ./srcs_mysql/mysql_scrpt.sh /files/srcs_mysql.sh
+RUN chmod 744 /files/mysql_scrpt.sh
+
 EXPOSE 3306
 
-CMD /bin/sh
+CMD /bin/sh -c "/files/mysql_scrpt.sh"

@@ -1,0 +1,22 @@
+FROM alpine:latest
+
+RUN apk update && apk upgrade
+RUN apk add wget
+
+# install php
+RUN mkdir /phpmyadmin
+RUN wget -O phpmyadmin.zip https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip
+RUN unzip /phpmyadmin.zip -d /phpmyadmin && rm -rf /phpmyadmin.zip
+
+# copy config
+COPY ./srcs_php/config.inc.php /phpmyadmin/config.inc.php
+RUN chmod 744 /phpmyadmin/config.inc.php
+
+# copy script
+RUN mkdir /files
+COPY ./srcs_php/php_script.sh /files/php_script.sh
+RUN chmod 744 /files/php_script.sh
+
+EXPOSE 5050
+
+CMD /bin/sh -c "/files/php_script.sh"

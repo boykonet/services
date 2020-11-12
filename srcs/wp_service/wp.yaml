@@ -22,6 +22,8 @@ spec:
   selector:
     matchLabels:
       app: wp
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -33,4 +35,3 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 5050
-        - containerPort: 3306

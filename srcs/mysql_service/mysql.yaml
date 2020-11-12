@@ -1,23 +1,28 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: nginx-deploy
+  name: mysql-volume-claim
   labels:
-    app: nginx
+    app: wp
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx-image
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 80
-        - containerPort: 443
+  accessModes:
+    - ReadWrteOnse
+    resources:
+      requests:
+        storage: 500Mi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-volume
+  labels:
+    type: local
+spec:
+  storageClassName:
+manual
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWrteOnse
+  hostPath:
+    path:"/mnt/data_mysql"

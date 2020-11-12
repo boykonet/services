@@ -2,7 +2,6 @@ FROM alpine:latest
 
 RUN apk update && apk upgrade
 RUN apk add nginx openssh supervisor
-RUN apk add --update util-linux
 
 RUN mkdir -p /etc/nginx/ssl/ && mkdir -p /run/nginx/ && mkdir -p /var/run/sshd/
 COPY ./srcs_nginx/nginx.crt ./srcs_nginx/nginx.key /etc/nginx/ssl/
@@ -24,6 +23,7 @@ COPY ./srcs_nginx/sshd_config /etc/ssh/sshd_config
 RUN chmod 744 /etc/ssh/sshd_config
 
 # copy script nginx.sh
+RUN mkdir -p /files/
 COPY ./srcs_nginx/nginx.sh /files/
 RUN chmod 744 /files/nginx.sh
 
@@ -34,7 +34,7 @@ RUN chmod 0700 /home/gkarina/.ssh/
 RUN touch /home/gkarina/.ssh/authorized_keys
 COPY ./srcs_nginx/gkarina_id_rsa.pub /home/gkarina/gkarina_id_rsa.pub
 RUN cat /home/gkarina/gkarina_id_rsa.pub >> /home/gkarina/.ssh/authorized_keys
-RUN chmod 400 /home/gkarina/.ssh/authorized_keys && rm -rf /home/gkarina/gkarina_id_rsa.pub
+RUN chmod 600 /home/gkarina/.ssh/authorized_keys && rm -rf /home/gkarina/gkarina_id_rsa.pub
 
 EXPOSE 80 443 22
 CMD /bin/sh -c "/files/nginx.sh"

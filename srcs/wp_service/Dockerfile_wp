@@ -1,0 +1,21 @@
+FROM alpine:latest
+
+RUN apk update && apk upgrade
+RUN apk add wget tar
+
+# install wp
+RUN mkdir /wordpress
+RUN wget -O /wordpress.tar.gz https://wordpress.org/latest.tar.gz
+RUN tar -C /wordpress/ -xzvf /wordpress.tar.gz && rm -rf /wordpress.tar.gz
+
+# copy config
+COPY ./srcs_wp/wp-config-sample.php /wordpress/wp-config.php
+RUN chmod 744 /wordpress/wp-config.php
+
+# copy script
+RUN mkdir /files
+COPY ./srcs_wp/wp_script.sh /files/wp_script.sh
+RUN chmod 744 /files/wp_script.sh
+
+EXPOSE 5000
+CMD /bin/sh -c "/files/wp_script.sh"

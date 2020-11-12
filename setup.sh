@@ -16,11 +16,11 @@ docker build -t nginx-image -f ./srcs/nginx_service/Dockerfile ./srcs/nginx_serv
 kubectl apply -f ./srcs/nginx_service/nginx.yaml
 
 # phpmyadmin
-docker build -t phpmyadmin_image -f ./srcs/phpmyadmin_service/Dockerfile_php ./srcs/phpmyadmin_service/
+docker build -t php_image -f ./srcs/phpmyadmin_service/Dockerfile_php ./srcs/phpmyadmin_service/
 kubectl apply -f ./srcs/phpmyadmin_service/php.yaml
 
 # wp
-docker build -t wordpress_image -f ./srcs/wordpress_service/Dockerfile_wp ./srcs/wordpress_service/
+docker build -t wp_image -f ./srcs/wordpress_service/Dockerfile_wp ./srcs/wordpress_service/
 kubectl apply -f ./srcs/wordpress_service/wp.yaml
 
 # grafana
