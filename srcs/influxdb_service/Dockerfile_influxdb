@@ -1,5 +1,52 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade
+RUN apk add supervisor
 
-CMD /bin/sh
+# download influxdb
+RUN wget -O /influxdb.tar.gz https://dl.influxdata.com/influxdb/releases/influxdb-1.8.3_linux_amd64.tar.gz
+RUN tar xvfz influxdb.tar.gz && rm -rf /influxdb.tar.gz
+RUN mv /influxdb-1.8.3-1 /influxdb
+RUN ln -svf /influxdb/usr/bin/influxd /usr/sbin/influxd
+
+# copy influxdb.conf
+COPY ./srcs_influxdb/influxdb.conf /influxdb/etc/influxdb/influxdb.conf
+RUN chmod 744 /influxdb/etc/influxdb/influxdb.conf
+
+# install glibc
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-2.32-r0.apk  && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-bin-2.32-r0.apk && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-i18n-2.32-r0.apk
+
+RUN apk add glibc-2.32-r0.apk
+RUN rm -f /usr/glibc-compat/lib/ld-linux-x86-64.so.2
+RUN ln -svf ld-2.32.so /usr/glibc-compat/lib/ld-linux-x86-64.so.2
+RUN apk add glibc-bin-2.32-r0.apk glibc-i18n-2.32-r0.apk 
+RUN /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+RUN rm -rf /glibc-2.32-r0.apk /glibc-bin-2.32-r0.apk /glibc-i18n-2.32-r0.apk
+
+# copy supervisord.conf
+COPY ./srcs_influxdb/supervisord.conf /etc/supervisord.conf
+RUN chmod 744 /etc/supervisord.conf
+
+# time
+# COPY /usr/share/zoneinfo/Europe/Moscow /usr/bin/time
+
+ENV INFLUXDB_CONFIG_PATH=/influxdb/etc/influxdb/influxdb.conf
+# ENV GOMAXPROCS=1
+# ENV INFLUXDB_META_DIR=/influxdb/var/lib/influxdb/meta
+# ENV INFLUXDB_META_LOGGING_ENABLED=true
+# ENV INFLUXDB_DATA_DIR=/influxdb/var/lib/influxdb/data
+# ENV INFLUXDB_DATA_WAL_FSYNC_DELAY=0s
+# ENV INFLUXDB_DATA_INDEX_VERSION=tsi1
+# ENV 
+
+# copy script
+RUN mkdir /files/
+COPY ./srcs_influxdb/influxdb_script.sh /files/influxdb_script.sh
+RUN chmod 744 /files/influxdb_script.sh
+
+EXPOSE 8086
+
+CMD /bin/sh -c "/files/influxdb_script.sh"

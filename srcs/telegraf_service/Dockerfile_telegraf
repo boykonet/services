@@ -1,7 +1,37 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade
+RUN apk add supervisor
 
-EXPOSE ?
+# download and install telegraf
+RUN wget https://dl.influxdata.com/telegraf/releases/telegraf-1.16.1_linux_amd64.tar.gz
+RUN tar xvf telegraf-1.16.1_linux_amd64.tar.gz
+RUN mv /telegraf-1.16.1 /telegraf && rm -rf /telegraf-1.16.1_linux_amd64.tar.gz
+RUN ln -svf /telegraf/usr/bin/telegraf /usr/sbin/telegraf
 
-CMD /bin/sh
+# /telegraf/etc/telegraf/telegraf.conf
+
+# install glibc
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-2.32-r0.apk  && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-bin-2.32-r0.apk && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-i18n-2.32-r0.apk
+
+RUN apk add glibc-2.32-r0.apk
+RUN rm -f /usr/glibc-compat/lib/ld-linux-x86-64.so.2
+RUN ln -svf ld-2.32.so /usr/glibc-compat/lib/ld-linux-x86-64.so.2
+RUN apk add glibc-bin-2.32-r0.apk glibc-i18n-2.32-r0.apk 
+RUN /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+
+ENV TELEGRAF_CONFIG_PATH=/telegraf/etc/telegraf/telegraf.conf
+
+# copy supervisord.conf
+COPY ./srcs_telegraf/supervisord.conf /etc/supervisord.conf
+RUN chmod 744 /etc/supervisord.conf
+
+# copy telegraf_script.sh
+RUN mkdir /files/
+COPY ./srcs_telegraf/telegraf_script.sh /files/telegraf_script.sh
+RUN chmod 744 /files/telegraf_script.sh
+
+CMD /bin/sh -c "/files/telegraf_script.sh"

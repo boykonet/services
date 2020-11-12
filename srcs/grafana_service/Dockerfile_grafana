@@ -1,7 +1,38 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade
+RUN apk add supervisor
+
+RUN wget -O grafana.tar.gz https://dl.grafana.com/oss/release/grafana-7.3.1.linux-amd64.tar.gz
+RUN tar -zxvf grafana.tar.gz && \
+	rm -rf grafana.tar.gz
+RUN mv /grafana-7.3.1 /grafana
+
+COPY ./srcs_grafana/custom.ini /grafana/conf/custom.ini
+
+# install glibc
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-2.32-r0.apk  && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-bin-2.32-r0.apk && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-i18n-2.32-r0.apk
+
+RUN apk add glibc-2.32-r0.apk
+RUN rm -f /usr/glibc-compat/lib/ld-linux-x86-64.so.2
+RUN ln -svf ld-2.32.so /usr/glibc-compat/lib/ld-linux-x86-64.so.2
+RUN apk add glibc-bin-2.32-r0.apk glibc-i18n-2.32-r0.apk 
+RUN /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+
+#ENV NGINX_IP_ADDR=192.168.99.100
+
+RUN mkdir /files
+COPY ./srcs_grafana/grafana_script.sh /files/grafana_script.sh
+RUN chmod 744 /files/grafana_script.sh
+RUN ln -svf /grafana/bin/grafana-server /usr/sbin/grafana-server
+# to run in supervisor put in supervisord.conf -> grafana-server --homepath /grafana
+
+COPY ./srcs_grafana/supervisord.conf /etc/supervisord.conf
+RUN chmod 744 /etc/supervisord.conf
 
 EXPOSE 3000
 
-CMD /bin/sh
+CMD /bin/sh -c "/files/grafana_script.sh"

@@ -2,11 +2,24 @@ FROM alpine:latest
 
 RUN apk update && apk upgrade
 RUN apk add vsftpd
-#RUN rc-update add vsftpd default
-#RUN rc-service vsftpd restart
 
+# copy config file
 COPY ./srcs_ftps/vsftpd.conf /etc/vsftpd/vsftpd.conf
 RUN chmod 744 /etc/vsftpd/vsftpd.conf
+
+# copy chroot_list
+COPY ./srcs_ftps/vsftpd.chroot_list /etc/vsftpd.chroot_list
+RUN chmod 744 /etc/vsftpd.chroot_list
+
+# add user gkarina
+RUN adduser -D gkarina
+RUN echo -c "gkarina42\ngkarina42" | passwd gkarina
+
+RUN mkdir -p /var/ftp/pub/
+RUN chmod 2775 /var/ftp/pub/ && chown root.gkarina /var/ftp/pub/
+
+RUN mkdir -p /var/ftp/incoming/
+RUN chmod 3773 /var/ftp/incoming/ && chown gkarina.gkarina /var/ftp/incoming/
 
 # copy script
 RUN mkdir -p /files/
