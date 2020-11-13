@@ -32,9 +32,9 @@ RUN chmod 744 /files/nginx.sh
 RUN mkdir -p /home/gkarina/.ssh/
 RUN chmod 0700 /home/gkarina/.ssh/
 RUN touch /home/gkarina/.ssh/authorized_keys
-COPY ./srcs_nginx/gkarina_id_rsa.pub /home/gkarina/gkarina_id_rsa.pub
-RUN cat /home/gkarina/gkarina_id_rsa.pub >> /home/gkarina/.ssh/authorized_keys
-RUN chmod 600 /home/gkarina/.ssh/authorized_keys && rm -rf /home/gkarina/gkarina_id_rsa.pub
+COPY ./srcs_nginx/gkarina.pub /home/gkarina/gkarina.pub
+RUN cat /home/gkarina/gkarina.pub >> /home/gkarina/.ssh/authorized_keys
+RUN chmod 600 /home/gkarina/.ssh/authorized_keys && rm -rf /home/gkarina/gkarina.pub
 
 EXPOSE 80 443 22
 CMD /bin/sh -c "/files/nginx.sh"

@@ -13,9 +13,9 @@
 Port 22
 #AddressFamily any
 ListenAddress 0.0.0.0
-ListenAddress ::
+#ListenAddress ::
 
-HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_rsa_key
 #HostKey /etc/ssh/ssh_host_ecdsa_key
 #HostKey /etc/ssh/ssh_host_ed25519_key
 
@@ -23,8 +23,8 @@ HostKey /etc/ssh/ssh_host_rsa_key
 #RekeyLimit default none
 
 # Logging
-SyslogFacility AUTH
-LogLevel INFO
+#SyslogFacility AUTH
+#LogLevel INFO
 
 # Authentication:
 
@@ -34,11 +34,11 @@ LogLevel INFO
 #MaxAuthTries 6
 #MaxSessions 10
 
-#PubkeyAuthentication no
+#PubkeyAuthentication yes
 
 # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 # but this is overridden so installations will only check .ssh/authorized_keys
-AuthorizedKeysFile	/home/gkarina/.ssh/authorized_keys
+AuthorizedKeysFile	.ssh/authorized_keys
 
 #AuthorizedPrincipalsFile none
 
