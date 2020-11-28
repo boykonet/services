@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql-svc
+  labels:
+    app: mysql
 spec:
   selector:
     app: mysql
@@ -22,6 +24,8 @@ spec:
   selector:
     matchLabels:
       app: mysql
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -35,7 +39,7 @@ spec:
           - containerPort: 3306
           volumeMounts:
           - name: mysql-volume
-            mountPath: /var/lib/data_mysql
+            mountPath: "/var/lib/mysql"
       volumes:
         - name: mysql-volume
           persistentVolumeClaim:

@@ -5,9 +5,9 @@ metadata:
 spec:
   storageClassName: manual
   volumeMode: Filesystem
+  volumeName: influx-pv
   accessModes:
-    - ReadWrteOnse
-    resources:
-      requests:
-        storage: 500Mi
-    storageClassName: storage-class-name
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi

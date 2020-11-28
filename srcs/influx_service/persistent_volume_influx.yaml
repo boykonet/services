@@ -7,17 +7,22 @@ spec:
     storage: 500Mi
   volumeMode: Filesystem
   accessModes:
-    - ReadWrteOnse
+    - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
+  # storageClassName: manual
   storageClassName: local-storage
   local:
-    path: /Users/gkarina/data_influx
+    path: "/mnt/influx"
+  claimRef:
+    name: influx-pvc
+    namespace: influx
+  # hostPath:
+  #   path: "/mnt/data-influx"
   nodeAffinity:
     required:
       nodeSelectorTerms:
-      - matchExpression:
+      - matchExpressions:
         - key: kubernetes.io/hostname
-          operator: On
+          operator: In
           values:
-          - my-node
-
+          - influx-node

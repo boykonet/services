@@ -1,12 +1,24 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade
-RUN apk add mariadb mariadb-client
+RUN apk add mariadb mariadb-common mariadb-client openrc supervisor
 
-RUN mkdir -p /run/mysqld/
+VOLUME /var/lib/mysql
+
+# copy my.cnf
+COPY ./srcs_mysql/mariadb-server.cnf /etc/my.cnf
+RUN chmod 744 /etc/my.cnf.d/mariadb-server.cnf
+
+# copy mysql_database.sql && mysql_secure_installation.sh
+RUN mkdir /files
+COPY ./srcs_mysql/mysql_database.sql ./srcs_mysql/mysql_secure_installation.sql /files/
+RUN chmod 744 /files/mysql_database.sql && chmod 744 /files/mysql_secure_installation.sql
+
+# copy supervisord.conf
+COPY ./srcs_mysql/supervisord.conf /etc/supervisord.conf
+RUN chmod 744 /etc/supervisord.conf
 
 # copy scrpt
-RUN mkdir /files
 COPY ./srcs_mysql/mysql_script.sh /files/mysql_script.sh
 RUN chmod 744 /files/mysql_script.sh
 

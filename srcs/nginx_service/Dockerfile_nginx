@@ -6,6 +6,11 @@ RUN apk add nginx openssh supervisor
 RUN mkdir -p /etc/nginx/ssl/ && mkdir -p /run/nginx/ && mkdir -p /var/run/sshd/
 COPY ./srcs_nginx/nginx.crt ./srcs_nginx/nginx.key /etc/nginx/ssl/
 
+# index.html
+RUN mkdir -p /var/www/
+COPY ./srcs_nginx/index.html /var/www/index.html
+RUN chmod 744 /var/www/index.html
+
 # create new user
 RUN adduser gkarina -D
 RUN echo -e "gkarina42\ngkarina42" | passwd gkarina

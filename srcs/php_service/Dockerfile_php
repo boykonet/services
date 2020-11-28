@@ -1,12 +1,28 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade
-RUN apk add wget
+RUN apk add wget nginx supervisor
+
+RUN apk add php php-fpm php-opcache
+RUN apk add php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip php-json php-zlib php-mysqli
+
+RUN apk add openrc
+
+RUN mkdir -p /run/nginx/
 
 # install php
-RUN mkdir /phpmyadmin
-RUN wget -O phpmyadmin.zip https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip
-RUN unzip /phpmyadmin.zip -d /phpmyadmin && rm -rf /phpmyadmin.zip
+RUN wget https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip
+RUN unzip /phpMyAdmin-5.0.2-all-languages.zip 
+RUN mv phpMyAdmin-5.0.2-all-languages phpmyadmin
+RUN rm -rf /phpMyAdmin-5.0.2-all-languages.zip
+
+# copy nginx.conf
+COPY ./srcs_php/php-nginx.conf /etc/nginx/conf.d/default.conf
+RUN chmod 744 /etc/nginx/conf.d/default.conf
+
+# copy supervisord.conf
+COPY ./srcs_php/supervisord.conf /etc/supervisord.conf
+RUN chmod 744 /etc/supervisord.conf
 
 # copy config
 COPY ./srcs_php/config.inc.php /phpmyadmin/config.inc.php

@@ -1,21 +1,37 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade
-RUN apk add wget tar
+RUN apk add wget tar nginx supervisor
+
+RUN apk add php php-fpm php-opcache
+RUN apk add php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip php-json php-zlib php-mysqli
+RUN apk add openrc
+
+RUN mkdir -p /run/nginx/
 
 # install wp
 RUN mkdir /wordpress
 RUN wget -O /wordpress.tar.gz https://wordpress.org/latest.tar.gz
 RUN tar -C /wordpress/ -xzvf /wordpress.tar.gz && rm -rf /wordpress.tar.gz
 
+# copy nginx.conf
+COPY ./srcs_wp/wp-nginx.conf /etc/nginx/conf.d/default.conf
+RUN chmod 744 /etc/nginx/conf.d/default.conf
+
+# copy supervisord.conf
+COPY ./srcs_wp/supervisord.conf /etc/supervisord.conf
+RUN chmod 744 /etc/supervisord.conf
+
 # copy config
 COPY ./srcs_wp/wp-config-sample.php /wordpress/wp-config.php
 RUN chmod 744 /wordpress/wp-config.php
+
+# RUN rc-update add php-fpm7 default
 
 # copy script
 RUN mkdir /files
 COPY ./srcs_wp/wp_script.sh /files/wp_script.sh
 RUN chmod 744 /files/wp_script.sh
 
-EXPOSE 5000
+EXPOSE 5050
 CMD /bin/sh -c "/files/wp_script.sh"

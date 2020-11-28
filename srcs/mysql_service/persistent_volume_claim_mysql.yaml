@@ -4,10 +4,10 @@ metadata:
   name: mysql-pvc
 spec:
   storageClassName: manual
-  volumeMode: Filesystem
+  # volumeMode: Filesystem
   accessModes:
     - ReadWrteOnse
     resources:
       requests:
         storage: 500Mi
-    storageClassName: storage-class-name
+    # storageClassName: storage-class-name

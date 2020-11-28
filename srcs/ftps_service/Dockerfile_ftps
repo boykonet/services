@@ -29,6 +29,6 @@ RUN chmod 744 /files/ftps_script.sh
 # /etc/vsftpd/vsftpd.conf - configurate file
 # /var/lib/ftp - all files
 
-EXPOSE 21
+EXPOSE 21 30021
 
 CMD /bin/sh -c "/files/ftps_script.sh"

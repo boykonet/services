@@ -2,6 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wp-svc
+  annotations:
+    metallb.universe.tf/allow-shared-ip: shared
+  labels:
+    app: wp
 spec:
   selector:
     app: wp
@@ -30,7 +34,7 @@ spec:
         app: wp
     spec:
       containers:
-      - name: wp
+      - name: wp-container
         image: wp-image
         imagePullPolicy: Never
         ports:
