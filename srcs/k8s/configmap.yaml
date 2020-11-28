@@ -6,8 +6,9 @@ metadata:
 data:
   config: |
     address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - 192.168.64.200/32
-      # - 192.168.99.100-192.168.99.200
+      - name: default
+        protocol: layer2
+        addresses:
+      # - 192.168.64.200/32
+      # - 192.168.99.200/32
+          - 192.168.99.100-192.168.99.200

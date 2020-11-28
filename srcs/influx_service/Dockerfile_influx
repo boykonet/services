@@ -3,6 +3,8 @@ FROM alpine:latest
 RUN apk update && apk upgrade
 RUN apk add supervisor
 
+VOLUME /var/lib/influxdb/data
+
 # download influxdb
 RUN wget -O /influxdb.tar.gz https://dl.influxdata.com/influxdb/releases/influxdb-1.8.3_linux_amd64.tar.gz
 RUN tar xvfz influxdb.tar.gz && rm -rf /influxdb.tar.gz

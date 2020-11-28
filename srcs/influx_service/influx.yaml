@@ -25,10 +25,11 @@ spec:
     matchLabels:
       app: influx
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+    type: Recreate
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 25%
+    #   maxUnavailable: 25%
   template:
     metadata:
       labels:
@@ -42,9 +43,11 @@ spec:
             - containerPort: 8086
           volumeMounts:
           - name: influx-storage
-            mountPath: "/var/lib/influx"
+            mountPath: "/var/lib/influxdb/data" 
           - name: influx-secret-dir
-            mountPath: "/var/lib/secret"
+            mountPath: "/influxdb/var/lib/secret"
+          # - name: dockersock
+          #   mountPath: /var/run/docker.sock
       volumes:
       - name: influx-storage
         persistentVolumeClaim:
@@ -52,3 +55,6 @@ spec:
       - name: influx-secret-dir
         secret:
           secretName: influx-secret
+      # - name: dockersock
+      #   hostPath:
+      #     path: /var/run/docker.sock

@@ -1,13 +1,15 @@
 #!/bin/bash
-
+# 8 (925) 770 - 00 - 22
 minikube delete
 
-# ip address: 192.168.99.0 - 192.168.99.254
-minikube start --cpus=2 memory=3096mb --driver=hyperkit
+docker-machine start default
+eval $(docker-machine env default)
 
-minikube addons enable metrics-server
-minikube addons enable dashboard
-minikube addons enable metallb
+# ip address: 192.168.99.0 - 192.168.99.254
+# minikube start --cpus=2 memory=3096mb --driver=hyperkit
+minikube start --cpus=2 memory=3096mb --driver=virtualbox
+
+minikube addons enable metrics-server && minikube addons enable dashboard && minikube addons enable metallb
 
 eval $(minikube docker-env)
 
