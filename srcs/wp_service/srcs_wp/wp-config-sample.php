@@ -20,16 +20,16 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define( 'DB_NAME', 'wordpress' );
+define( 'DB_NAME', 'gkarina_database' );
 
 /** MySQL database username */
-define( 'DB_USER', 'wordpress_user' );
+define( 'DB_USER', 'gkarina_user' );
 
 /** MySQL database password */
 define( 'DB_PASSWORD', 'gkarina42' );
 
 /** MySQL hostname */
-define( 'DB_HOST', 'localhost' );
+define( 'DB_HOST', 'mysql-svc' );
 
 /** Database Charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
@@ -64,7 +64,7 @@ define('NONCE_SALT',       '{Xj-aC&m+#^h{v7YjD+/cyJ$?ao*9&nKmH(5RRCy1rYNsyP4wUF-
  * You can have multiple installations in one database if you give each
  * a unique prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix = 'wp_';
+$table_prefix = 'gkarina_';
 
 /**
  * For developers: WordPress debugging mode.

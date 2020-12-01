@@ -5,16 +5,15 @@ RUN apk add wget nginx supervisor
 
 RUN apk add php php-fpm php-opcache
 RUN apk add php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip php-json php-zlib php-mysqli
-
 RUN apk add openrc
 
 RUN mkdir -p /run/nginx/
 
 # install php
-RUN wget https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip
-RUN unzip /phpMyAdmin-5.0.2-all-languages.zip 
-RUN mv phpMyAdmin-5.0.2-all-languages phpmyadmin
-RUN rm -rf /phpMyAdmin-5.0.2-all-languages.zip
+RUN mkdir -p /var/www/html/
+RUN wget -O /var/www/phpmyadmin.zip https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip
+RUN unzip /var/www/phpmyadmin.zip -d /var/www/
+RUN mv /var/www/phpMyAdmin-5.0.2-all-languages /var/www/phpmyadmin && rm -rf /var/www/phpmyadmin.zip
 
 # copy nginx.conf
 COPY ./srcs_php/php-nginx.conf /etc/nginx/conf.d/default.conf
@@ -25,14 +24,16 @@ COPY ./srcs_php/supervisord.conf /etc/supervisord.conf
 RUN chmod 744 /etc/supervisord.conf
 
 # copy config
-COPY ./srcs_php/config.inc.php /phpmyadmin/config.inc.php
-RUN chmod 744 /phpmyadmin/config.inc.php
+COPY ./srcs_php/config.inc.php /var/www/phpmyadmin/config.inc.php
+RUN chmod 744 /var/www/phpmyadmin/config.inc.php
 
 # copy script
 RUN mkdir /files
 COPY ./srcs_php/php_script.sh /files/php_script.sh
 RUN chmod 744 /files/php_script.sh
 
-EXPOSE 5050
+VOLUME /var/www/html
+
+EXPOSE 5000
 
 CMD /bin/sh -c "/files/php_script.sh"

@@ -9,7 +9,8 @@ spec:
     app: influx
   type: ClusterIP
   ports:
-    - protocol: TCP
+    - name: influx-port
+      protocol: TCP
       port: 8086
       targetPort: 8086
 ---
@@ -24,6 +25,7 @@ spec:
   selector:
     matchLabels:
       app: influx
+  minReadySeconds: 5
   strategy:
     type: Recreate
     # type: RollingUpdate
@@ -40,21 +42,25 @@ spec:
           image: influx-image
           imagePullPolicy: Never
           ports:
-            - containerPort: 8086
+            - name: influx-port
+              containerPort: 8086
           volumeMounts:
           - name: influx-storage
-            mountPath: "/var/lib/influxdb/data" 
-          - name: influx-secret-dir
-            mountPath: "/influxdb/var/lib/secret"
+            mountPath: /var/lib/influxdb/data
+          # - name: influx-secret-dir
+          #   mountPath: "/influxdb/var/lib/secret"
           # - name: dockersock
           #   mountPath: /var/run/docker.sock
+          envFrom:
+            - secretRef:
+                name: influx-secret
       volumes:
       - name: influx-storage
         persistentVolumeClaim:
           claimName: influx-pvc
-      - name: influx-secret-dir
-        secret:
-          secretName: influx-secret
+      # - name: influx-secret-dir
+      #   secret:
+      #     secretName: influx-secret
       # - name: dockersock
       #   hostPath:
       #     path: /var/run/docker.sock

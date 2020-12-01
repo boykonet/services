@@ -32,8 +32,6 @@ RUN rm -rf /glibc-2.32-r0.apk /glibc-bin-2.32-r0.apk /glibc-i18n-2.32-r0.apk
 COPY ./srcs_influx/supervisord.conf /etc/supervisord.conf
 RUN chmod 744 /etc/supervisord.conf
 
-
-ENV INFLUXDB_CONFIG_PATH=/influxdb/etc/influxdb/influxdb.conf
 ENV GOMAXPROCS=1
 
 # copy script

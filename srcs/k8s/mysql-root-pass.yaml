@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-root-pass
+type: Opaque
+data:
+  password: Z2thcmluYTQyLXBhc3N3b3Jk # gkarina42-password

@@ -11,7 +11,8 @@ spec:
     app: grafana
   type: LoadBalancer
   ports:
-    - protocol: TCP
+    - name: grafana-port
+      protocol: TCP
       port: 3000
       targetPort: 3000
 ---
@@ -21,25 +22,19 @@ metadata:
   name: grafana-deploy
   labels:
     app: grafana
-  namespase: monitoring
-  annotations:
-  creationTimestamp: null
-  generation: 1
 spec:
-  progressDeadlineSeconds: 600
   replicas: 1
-  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: grafana
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+  minReadySeconds: 5
+  # strategy:
+  #   rollingUpdate:
+  #     maxSurge: 25%
+  #     maxUnavailable: 25%
+  #   type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: grafana
     spec:
@@ -48,4 +43,7 @@ spec:
         image: grafana-image
         imagePullPolicy: Never
         ports:
-        - containerPort: 3000
+        - name: grafana-port
+          containerPort: 3000
+        env:
+          - name: 

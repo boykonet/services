@@ -8,7 +8,8 @@ metadata:
     app: php
 spec:
   selector:
-    app: php
+    app: wp
+    tier: frontend
   type: LoadBalancer
   ports:
     - protocol: TCP
@@ -25,15 +26,34 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: php
+      app: wp
+      tier: frontend
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: php
+        app: wp
+        tier: frontend
     spec:
       containers:
-      - name: php-container
-        image: php-image
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 5000
+        - name: php-container
+          image: php-image
+          imagePullPolicy: Never
+          env:
+            - name: PMA_HOST
+              value: mysql-svc
+            - name: PMA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-pass
+                  key: password
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: php-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: php-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc

@@ -7,7 +7,7 @@ metadata:
 spec:
   storageClassName: manual
   volumeMode: Filesystem
-  volumeName: influx-pv
+  # volumeName: influx-pv
   accessModes:
     - ReadWriteOnce
   resources:
