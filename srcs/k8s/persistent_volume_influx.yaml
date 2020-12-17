@@ -2,27 +2,28 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: influx-pv
+  labels:
+    type: local
 spec:
   capacity:
-    storage: 500Mi
+    storage: 2Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Recycle
-  # storageClassName: manual
-  storageClassName: local-storage
-  local:
-    path: "/mnt/influx"
-  claimRef:
-    name: influx-pvc
-    namespace: influx
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: "/mnt/influx-data"
+  # claimRef:
+  #   name: influx-pvc
+  #   namespace: influx
   # hostPath:
   #   path: "/mnt/data-influx"
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - influx-node
+  # nodeAffinity:
+  #   required:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/hostname
+  #         operator: In
+  #         values:
+  #         - influx-node

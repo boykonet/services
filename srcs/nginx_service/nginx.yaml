@@ -10,7 +10,6 @@ spec:
   selector:
     app: nginx
   type: LoadBalancer
-  # loadBalancerIP: 192.168.99.101
   ports:
     - protocol: TCP
       name: http
@@ -42,10 +41,10 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx-container
-        image: nginx-image
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 80
-        - containerPort: 443
-        - containerPort: 22
+        - name: nginx-container
+          image: nginx-image
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+            - containerPort: 22

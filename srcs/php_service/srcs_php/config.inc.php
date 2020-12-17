@@ -15,7 +15,7 @@ declare(strict_types=1);
  * This is needed for cookie based authentication to encrypt password in
  * cookie. Needs to be 32 chars long.
  */
-$cfg['blowfish_secret'] = ''; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+$cfg['blowfish_secret'] = 'Nw,3j7f6RV/4Itwn1t=-tQ5xouyF}t[g'; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
 
 /**
  * Servers configuration
@@ -29,7 +29,8 @@ $i++;
 /* Authentication type */
 $cfg['Servers'][$i]['auth_type'] = 'cookie';
 /* Server parameters */
-$cfg['Servers'][$i]['host'] = 'localhost';
+$cfg['Servers'][$i]['host'] = 'mysql-svc';
+$cfg['Servers'][$i]['port'] = '3306';
 $cfg['Servers'][$i]['compress'] = false;
 $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
@@ -39,10 +40,14 @@ $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
 $cfg['Servers'][$i]['extension'] = 'mysqli';
 $cfg['Servers'][$i]['connect_type'] = 'tcp';
-$cfg['Servers'][$i]['auth_type'] = 'config';
-$cfg['Servers'][$i]['user'] = 'wp_user';
+// $cfg['Servers'][$i]['auth_type'] = 'config';
+$cfg['Servers'][$i]['user'] = 'gkarina_user';
 $cfg['Servers'][$i]['password'] = 'gkarina42';
 
+$cfg['PmaAbsoluteUri'] = '/';
+$cfg['MemoryLimit'] = '512M';
+
+//$cfg['Servers'][$i]['ssl_verify'] = false;
 
 /* User used to manipulate with storage */
 // $cfg['Servers'][$i]['controlhost'] = '';

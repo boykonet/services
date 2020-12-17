@@ -6,10 +6,11 @@ metadata:
     metallb.universe.tf/allow-shared-ip: shared
   labels:
     app: php
+    # tier: wp
 spec:
   selector:
-    app: wp
-    tier: frontend
+    app: php
+    # tier: wp
   type: LoadBalancer
   ports:
     - protocol: TCP
@@ -22,38 +23,53 @@ metadata:
   name: php-deploy
   labels:
     app: php
+    # tier: wp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wp
-      tier: frontend
+      app: php
+      # tier: wp
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: wp
-        tier: frontend
+        app: php
+        # tier: wp
     spec:
       containers:
         - name: php-container
           image: php-image
           imagePullPolicy: Never
           env:
-            - name: PMA_HOST
-              value: mysql-svc
-            - name: PMA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-user-pass
-                  key: password
+            # - name: PMA_ARBITRARY
+              # value: '1'
+            # - name: PMA_HOST
+            #   value: mysql-svc
+            # - name: PMA_USER
+            #   value: gkarina_user
+            # - name: PMA_PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: mysql-user-pass
+            #       key: password
+            # - name: MYSQL_ROOT_PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: mysql-root-pass
+            #       key: password
           ports:
             - containerPort: 5000
-          volumeMounts:
-            - name: php-storage
-              mountPath: /var/www/html
-      volumes:
-        - name: php-storage
-          persistentVolumeClaim:
-            claimName: mysql-pvc
+          # volumeMounts:
+          #   - name: php-storage
+          #     mountPath: /var/www/html
+          #   # - name: dockersock
+          #   #   mountPath: /var/run/docker.sock
+      # volumes:
+        # - name: php-storage
+          # persistentVolumeClaim:
+          #   claimName: mysql-pvc
+        # - name: dockersock
+        #   hostPath:
+        #     path: /var/run/docker.sock

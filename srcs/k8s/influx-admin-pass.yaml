@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mysql-user-pass
+  name: influx-admin-pass
 type: Opaque
 data:
-  password: Z2thcmluYTQy
+  password: YWRtaW4=

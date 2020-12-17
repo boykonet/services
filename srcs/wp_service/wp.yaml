@@ -9,12 +9,12 @@ metadata:
 spec:
   selector:
     app: wp
-    tier: frontend
+    # tier: frontend
   type: LoadBalancer
   ports:
-    - protocol: TCP
+    - name: wp-port
+      protocol: TCP
       port: 5050
-      targetPort: 5050
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -22,45 +22,51 @@ metadata:
   name: wp-deploy
   labels:
     app: wp
+    # tier: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: wp
-      tier: frontend
+      # tier: frontend
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: wp
-        tier: frontend
+        # tier: frontend
     spec:
       containers:
         - name: wp-container
           image: wp-image
           imagePullPolicy: Never
-          env:
-            - name: WORDPRESS_DB_HOST
-              value: mysql-svc
-            - name: WORDPRESS_DB_USER
-              value: gkarina_user
-            - name: WORDPRESS_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-user-pass
-                  key: password
-            - name: WORDPRESS_DB_NAME
-              value: gkarina_database
-            - name: WORDPRESS_TABLE_PREFIX
-              value: gkarina_
+          # env:
+          #   - name: WORDPRESS_DB_HOST
+          #     value: mysql-svc
+          #   - name: WORDPRESS_DB_USER
+          #     value: gkarina_user
+          #   - name: WORDPRESS_DB_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: mysql-user-pass
+          #         key: password
+          #   - name: WORDPRESS_DB_NAME
+          #     value: gkarina_database
+          #   - name: WORDPRESS_TABLE_PREFIX
+          #     value: gkarina_
           ports:
             - containerPort: 5050
               name: wp-port
-          volumeMounts:
-            - name: wp-storage
-              mountPath: /var/www/html
-      volumes:
-        - name: wp-storage
-          persistentVolumeClaim:
-            claimName: mysql-pvc
+          # volumeMounts:
+          #   - name: wp-storage
+          #     mountPath: /var/www/html
+          #   # - name: dockersock
+          #   #   mountPath: /var/run/docker.sock
+      # volumes:
+        # - name: wp-storage
+          # persistentVolumeClaim:
+          #   claimName: mysql-pvc
+        # - name: dockersock
+        #   hostPath:
+        #     path: /var/run/docker.sock

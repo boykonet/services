@@ -12,7 +12,6 @@ spec:
     - name: influx-port
       protocol: TCP
       port: 8086
-      targetPort: 8086
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -25,13 +24,8 @@ spec:
   selector:
     matchLabels:
       app: influx
-  minReadySeconds: 5
   strategy:
     type: Recreate
-    # type: RollingUpdate
-    # rollingUpdate:
-    #   maxSurge: 25%
-    #   maxUnavailable: 25%
   template:
     metadata:
       labels:
@@ -44,23 +38,30 @@ spec:
           ports:
             - name: influx-port
               containerPort: 8086
+          # env:
+          #   - name: INFLUXDB_ADMIN_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: influx-admin-pass
+          #         key: password
+          #   - name: INFLUXDB_USER_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: influx-user-pass
+          #         key: password
+          # envFrom:
+          #   - secretRef:
+          #       name: influx-secrets
           volumeMounts:
-          - name: influx-storage
-            mountPath: /var/lib/influxdb/data
-          # - name: influx-secret-dir
-          #   mountPath: "/influxdb/var/lib/secret"
-          # - name: dockersock
-          #   mountPath: /var/run/docker.sock
-          envFrom:
-            - secretRef:
-                name: influx-secret
+            - name: influx-storage
+              mountPath: /var/lib/influxdb
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+              readOnly: true
       volumes:
       - name: influx-storage
         persistentVolumeClaim:
           claimName: influx-pvc
-      # - name: influx-secret-dir
-      #   secret:
-      #     secretName: influx-secret
-      # - name: dockersock
-      #   hostPath:
-      #     path: /var/run/docker.sock
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock

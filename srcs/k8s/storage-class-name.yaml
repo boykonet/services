@@ -2,9 +2,9 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: local-storage
-provisioner: kubernetes.io/aws-ebs
+provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
-parameters:
-  type: io1
-  iopsPerMB: "500"
-  fsType: ext4
+# parameters:
+#   type: io1
+#   iopsPerMB: "500"
+#   fsType: ext4

@@ -1,34 +1,46 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Dockerfile_ftps                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: gkarina <gkarina@student.21-school.ru>     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/12/15 23:53:09 by gkarina           #+#    #+#              #
+#    Updated: 2020/12/15 23:53:09 by gkarina          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 FROM alpine:latest
 
 RUN apk update && apk upgrade
 RUN apk add vsftpd
 
+RUN mkdir -p /var/run/vsftpd/empty && mkdir -p /var/log/
+
+# copy cert
+RUN mkdir -p /etc/certs/
+COPY ./srcs_ftps/vsftpd.crt ./srcs_ftps/vsftpd.key /etc/certs/
+
 # copy config file
 COPY ./srcs_ftps/vsftpd.conf /etc/vsftpd/vsftpd.conf
-RUN chmod 744 /etc/vsftpd/vsftpd.conf
+RUN chmod 774 /etc/vsftpd/vsftpd.conf
 
-# copy chroot_list
-COPY ./srcs_ftps/vsftpd.chroot_list /etc/vsftpd.chroot_list
-RUN chmod 744 /etc/vsftpd.chroot_list
+# add passworf for root
+RUN echo -e "root42\nroot42" | passwd root
 
-# add user gkarina
-RUN adduser -D gkarina
-RUN echo -c "gkarina42\ngkarina42" | passwd gkarina
+# create password for vsftp user
+RUN echo -e "gkarina42\ngkarina42" | passwd vsftp
 
-RUN mkdir -p /var/ftp/pub/
-RUN chmod 2775 /var/ftp/pub/ && chown root.gkarina /var/ftp/pub/
+RUN mkdir -p /var/lib/ftp
+RUN chown -R vsftp:ftp /var/lib/ftp
 
-RUN mkdir -p /var/ftp/incoming/
-RUN chmod 3773 /var/ftp/incoming/ && chown gkarina.gkarina /var/ftp/incoming/
+# VOLUME /var/lib/ftp
 
 # copy script
 RUN mkdir -p /files/
 COPY ./srcs_ftps/ftps_script.sh /files/ftps_script.sh
 RUN chmod 744 /files/ftps_script.sh
 
-# /etc/vsftpd/vsftpd.conf - configurate file
-# /var/lib/ftp - all files
-
-EXPOSE 21 30021
+EXPOSE 20 21 60000
 
 CMD /bin/sh -c "/files/ftps_script.sh"

@@ -1,23 +1,23 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Dockerfile_influx                                  :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: gkarina <gkarina@student.21-school.ru>     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/12/15 23:53:46 by gkarina           #+#    #+#              #
+#    Updated: 2020/12/15 23:53:46 by gkarina          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 FROM alpine:latest
 
 RUN apk update && apk upgrade
 RUN apk add supervisor
 
-VOLUME /var/lib/influxdb/data
-
-# download influxdb
-RUN wget -O /influxdb.tar.gz https://dl.influxdata.com/influxdb/releases/influxdb-1.8.3_linux_amd64.tar.gz
-RUN tar xvfz influxdb.tar.gz && rm -rf /influxdb.tar.gz
-RUN mv /influxdb-1.8.3-1 /influxdb
-RUN ln -svf /influxdb/usr/bin/influxd /usr/sbin/influxd
-
-# copy influxdb.conf
-COPY ./srcs_influx/influxdb.conf /influxdb/etc/influxdb/influxdb.conf
-RUN chmod 744 /influxdb/etc/influxdb/influxdb.conf
-
 # install glibc
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-2.32-r0.apk  && \
+	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-2.32-r0.apk && \
 	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-bin-2.32-r0.apk && \
 	wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.32-r0/glibc-i18n-2.32-r0.apk
 
@@ -28,10 +28,33 @@ RUN apk add glibc-bin-2.32-r0.apk glibc-i18n-2.32-r0.apk
 RUN /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
 RUN rm -rf /glibc-2.32-r0.apk /glibc-bin-2.32-r0.apk /glibc-i18n-2.32-r0.apk
 
+# download and install influxdb
+RUN wget https://dl.influxdata.com/influxdb/releases/influxdb-1.8.3_linux_amd64.tar.gz
+RUN tar xvfz influxdb-1.8.3_linux_amd64.tar.gz && rm -rf /influxdb-1.8.3_linux_amd64.tar.gz
+RUN mv influxdb-1.8.3-1 influx
+RUN cp /influx/usr/bin/* /usr/bin/
+
+# download and install telegraf
+RUN wget https://dl.influxdata.com/telegraf/releases/telegraf-1.16.1_linux_amd64.tar.gz
+RUN tar xvf telegraf-1.16.1_linux_amd64.tar.gz
+RUN mv telegraf-1.16.1 telegraf && rm -rf telegraf-1.16.1_linux_amd64.tar.gz
+RUN cp /telegraf/usr/bin/telegraf /usr/bin/telegraf
+
+RUN mkdir -p /var/run/ && mkdir -p /var/lib/influxdb
+
+# copy influxdb.conf
+COPY ./srcs_influx/influxdb.conf /etc/influx.conf
+RUN chmod 744 /etc/influx.conf
+
+# copy telegraf.conf
+COPY ./srcs_influx/telegraf.conf /etc/telegraf.conf
+RUN chmod 744 /etc/telegraf.conf
+
 # copy supervisord.conf
 COPY ./srcs_influx/supervisord.conf /etc/supervisord.conf
 RUN chmod 744 /etc/supervisord.conf
 
+VOLUME /var/lib/influxdb
 ENV GOMAXPROCS=1
 
 # copy script
@@ -40,5 +63,4 @@ COPY ./srcs_influx/influxdb_script.sh /files/influxdb_script.sh
 RUN chmod 744 /files/influxdb_script.sh
 
 EXPOSE 8086
-
 CMD /bin/sh -c "/files/influxdb_script.sh"

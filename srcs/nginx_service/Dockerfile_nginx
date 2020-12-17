@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Dockerfile_nginx                                   :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: gkarina <gkarina@student.21-school.ru>     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/12/15 23:54:19 by gkarina           #+#    #+#              #
+#    Updated: 2020/12/15 23:54:19 by gkarina          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 FROM alpine:latest
 
 RUN apk update && apk upgrade
@@ -33,13 +45,13 @@ COPY ./srcs_nginx/nginx.sh /files/
 RUN chmod 744 /files/nginx.sh
 
 
-# create .ssh/ dir and copy key.pub in /.ssh/autorized_keys
-RUN mkdir -p /home/gkarina/.ssh/
-RUN chmod 0700 /home/gkarina/.ssh/
-RUN touch /home/gkarina/.ssh/authorized_keys
-COPY ./srcs_nginx/gkarina.pub /home/gkarina/gkarina.pub
-RUN cat /home/gkarina/gkarina.pub >> /home/gkarina/.ssh/authorized_keys
-RUN chmod 600 /home/gkarina/.ssh/authorized_keys && rm -rf /home/gkarina/gkarina.pub
+# # create .ssh/ dir and copy key.pub in /.ssh/autorized_keys
+# RUN mkdir -p /home/gkarina/.ssh/
+# RUN chmod 0700 /home/gkarina/.ssh/
+# RUN touch /home/gkarina/.ssh/authorized_keys
+# COPY ./srcs_nginx/gkarina.pub /home/gkarina/gkarina.pub
+# RUN cat /home/gkarina/gkarina.pub >> /home/gkarina/.ssh/authorized_keys
+# RUN chmod 600 /home/gkarina/.ssh/authorized_keys && rm -rf /home/gkarina/gkarina.pub
 
 EXPOSE 80 443 22
 CMD /bin/sh -c "/files/nginx.sh"

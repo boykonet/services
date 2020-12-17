@@ -5,11 +5,11 @@ metadata:
   labels:
     app: influx
 spec:
-  storageClassName: manual
-  volumeMode: Filesystem
-  # volumeName: influx-pv
+  # volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 500Mi
+      storage: 2Gi
+  storageClassName: manual
+  volumeName: influx-pv

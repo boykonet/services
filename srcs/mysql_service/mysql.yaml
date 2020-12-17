@@ -3,11 +3,12 @@ kind: Service
 metadata:
   name: mysql-svc
   labels:
-    app: wp
+    app: mysql
+    # tier: wp
 spec:
   selector:
-    app: wp
-    tier: mysql
+    app: mysql
+    # tier: wp
   type: ClusterIP
   ports:
     - name: mysql-port
@@ -19,20 +20,21 @@ kind: Deployment
 metadata:
   name: mysql-deploy
   labels:
-    app: wp
+    app: mysql
+    # tier: wp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wp
-      tier: mysql
+      app: mysql
+      # tier: wp
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: wp
-        tier: mysql
+        app: mysql
+        # tier: wp
     spec:
       containers:
         - name: mysql-container
@@ -50,7 +52,12 @@ spec:
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
+            - name: sys-cgroup
+              mountPath: /sys/fs/cgroup
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
+        - name: sys-cgroup
+          hostPath:
+            path: /sys/fs/cgroup

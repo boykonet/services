@@ -6,15 +6,16 @@ metadata:
     metallb.universe.tf/allow-shared-ip: shared
   labels:
     app: grafana
+    # tier: frontend
 spec:
   selector:
     app: grafana
+    # tier: frontend
   type: LoadBalancer
   ports:
     - name: grafana-port
       protocol: TCP
       port: 3000
-      targetPort: 3000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -22,28 +23,38 @@ metadata:
   name: grafana-deploy
   labels:
     app: grafana
+    # tier: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: grafana
-  minReadySeconds: 5
-  # strategy:
-  #   rollingUpdate:
-  #     maxSurge: 25%
-  #     maxUnavailable: 25%
-  #   type: RollingUpdate
+      # tier: frontend
   template:
     metadata:
       labels:
         app: grafana
+        # tier: frontend
     spec:
       containers:
-      - name: grafana-container
-        image: grafana-image
-        imagePullPolicy: Never
-        ports:
-        - name: grafana-port
-          containerPort: 3000
-        env:
-          - name: 
+        - name: grafana-container
+          image: grafana-image
+          imagePullPolicy: Never
+          ports:
+            - name: grafana-port
+              containerPort: 3000
+          env:
+            - name: GF_INSTALL_PLUGINS
+              value: grafana-piechart-panel, blackmirror1-singlestat-math-panel
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: influx-admin-pass
+                  key: password
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: influx-pvc

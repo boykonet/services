@@ -11,14 +11,18 @@ spec:
     app: ftps
   type: LoadBalancer
   ports:
-    - protocol: FTP
-      name: chief_port
+    - protocol: TCP
+      name: data-port
+      port: 20
+      targetPort: 20
+    - protocol: TCP
+      name: chroot-port
       port: 21
       targetPort: 21
-    - protocol: FTP
-      name: passive_port
-      port: 30021
-      targetPort: 30021
+    - protocol: TCP
+      name: passive-port
+      port: 60000
+      targetPort: 60000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,9 +41,17 @@ spec:
         app: ftps
     spec:
       containers:
-      - name: ftps-container
-        image: ftps-image
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 21
-        - containerPort: 30021
+        - name: ftps-container
+          image: ftps-image
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 20
+            - containerPort: 21
+            - containerPort: 60000
+          # volumeMounts:
+          #   - name: ftps-storage
+          #     mountPath: /var/lib/
+      # volumes:
+        # - name: ftps-storage
+          # persistentVolumeClaim:
+          #   claimName: ftps-pvc

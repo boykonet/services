@@ -3,19 +3,17 @@ kind: PersistentVolume
 metadata:
   name: mysql-pv
   labels:
-    app: wp
-    tier: mysql
-  labels:
-    app: php
-    tier: mysql
+    type: local
 spec:
-  # storageClassName: manual
   capacity:
-    storage: 500Mi
-  # volumeMode: Filesystem
+    storage: 2Gi
+  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  # persistentVolumeReclaimPolicy: Delete
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: "/mnt/mysql-data"
   # local:
   #   path: "/mnt/data_mariadb"
   # nodeAffinity:
@@ -26,8 +24,6 @@ spec:
   #         operator: On
   #         values:
   #         - my-node
-  nfs:
-    server: 192.168.64.200
-    path: "/var/lib/mysql"
-  # hostPath:
-  #   path: "/mnt/data_mariadb"
+  # nfs:
+  #   server: 192.168.64.200
+  #   path: "/var/lib/mysql"
